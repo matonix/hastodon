@@ -1,5 +1,6 @@
 module Web.Hastodon.API
   ( mkHastodonClient
+  , mkHastodonClient'
   , getAccountById
   , getCurrentAccount
   , getFollowers
@@ -19,6 +20,7 @@ module Web.Hastodon.API
   , getSearchedAccounts
   , getSearchedAccountsWithOption
   , postApps
+  , postApps'
   , getBlocks
   , getBlocksWithOption
   , getFavorites
@@ -279,8 +281,8 @@ postUnmute client id = do
   res <- postAndGetHastodonResponseJSON (replace ":id" (show id) pUnmute) [] client
   return (getResponseBody res :: Either JSONException Relationship)
 
-postApps :: String -> String -> IO (Either JSONException OAuthClient)
-postApps host clientName = do
+postApps' :: String -> String -> IO (Either JSONException OAuthClient)
+postApps' host clientName = do
   let reqBody = [(Char8.pack "client_name", utf8ToChar8 clientName),
                  (Char8.pack "redirect_uris", Char8.pack "urn:ietf:wg:oauth:2.0:oob"),
                  (Char8.pack "scopes", Char8.pack "read write follow")]
