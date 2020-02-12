@@ -126,6 +126,19 @@ pTaggedTimeline    = "/api/v1/timelines/tag/:hashtag"
 -- helpers
 --
 
+getOAuthToken' :: String -> String -> String -> String -> String -> IO (Either JSONException OAuthResponse)
+getOAuthToken' clientId clientSecret username password host = do
+  initReq <- parseRequest $ "http://" ++ host ++ "/oauth/token"
+  let reqBody = [(Char8.pack "client_id", utf8ToChar8 clientId),
+                 (Char8.pack "client_secret", utf8ToChar8 clientSecret),
+                 (Char8.pack "username", utf8ToChar8 username),
+                 (Char8.pack "password", utf8ToChar8 password),
+                 (Char8.pack "grant_type", Char8.pack "password"),
+                 (Char8.pack "scope", Char8.pack "read write follow")]
+  let req = setRequestBodyURLEncoded reqBody $ initReq
+  res <- httpJSONEither req
+  return $ (getResponseBody res :: Either JSONException OAuthResponse)
+
 getOAuthToken :: String -> String -> String -> String -> String -> IO (Either JSONException OAuthResponse)
 getOAuthToken clientId clientSecret username password host = do
   initReq <- parseRequest $ "https://" ++ host ++ "/oauth/token"
@@ -265,6 +278,16 @@ postUnmute :: HastodonClient -> AccountId ->  IO (Either JSONException Relations
 postUnmute client id = do
   res <- postAndGetHastodonResponseJSON (replace ":id" (show id) pUnmute) [] client
   return (getResponseBody res :: Either JSONException Relationship)
+
+postApps :: String -> String -> IO (Either JSONException OAuthClient)
+postApps host clientName = do
+  let reqBody = [(Char8.pack "client_name", utf8ToChar8 clientName),
+                 (Char8.pack "redirect_uris", Char8.pack "urn:ietf:wg:oauth:2.0:oob"),
+                 (Char8.pack "scopes", Char8.pack "read write follow")]
+  initReq <- parseRequest $ "http://" ++ host ++ pApps
+  let req = setRequestBodyURLEncoded reqBody $ initReq
+  res <- httpJSONEither req
+  return (getResponseBody res :: Either JSONException OAuthClient)
 
 postApps :: String -> String -> IO (Either JSONException OAuthClient)
 postApps host clientName = do
