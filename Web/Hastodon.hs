@@ -4,6 +4,7 @@ module Web.Hastodon
   , module Web.Hastodon.Types
   , HastodonClient(..)
   , mkHastodonClient
+  , mkHastodonClient'
   , getAccountById
   , getCurrentAccount
   , getFollowers
@@ -23,6 +24,7 @@ module Web.Hastodon
   , getSearchedAccounts
   , getSearchedAccountsWithOption
   , postApps
+  , postApps'
   , getBlocks
   , getBlocksWithOption
   , getFavorites
