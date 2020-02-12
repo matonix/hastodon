@@ -180,6 +180,13 @@ postAndGetHastodonResponseJSON path body client = do
 -- exported functions
 --
 
+mkHastodonClient' :: String -> String -> String -> String -> String -> IO (Maybe HastodonClient)
+mkHastodonClient' clientId clientSecret username password host = do
+  oauthRes <- getOAuthToken' clientId clientSecret username password host
+  case oauthRes of
+    Left err -> return $ Nothing
+    Right oauthData -> return $ Just $ HastodonClient host (accessToken oauthData)
+
 mkHastodonClient :: String -> String -> String -> String -> String -> IO (Maybe HastodonClient)
 mkHastodonClient clientId clientSecret username password host = do
   oauthRes <- getOAuthToken clientId clientSecret username password host
